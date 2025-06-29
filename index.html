@@ -1,852 +1,114 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pixel Glitcher</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #fce4ec, #f0f4f8);
-            /* Light pink to light blue-gray gradient */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            color: #333;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pixel Glitcher</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #fce4ec, #f0f4f8);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      color: #333;
+    }
 
-        .container {
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-            padding: 2.5rem;
-            max-width: 90%;
-            width: 900px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 2rem;
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            backdrop-filter: blur(10px);
-        }
+    .container {
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+      padding: 2.5rem;
+      max-width: 90%;
+      width: 900px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2rem;
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      backdrop-filter: blur(10px);
+    }
 
-        .header {
-            text-align: center;
-        }
+    h1 {
+      background: linear-gradient(45deg, #ff6b81, #ff94c2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
 
-        h1 {
-            background: linear-gradient(45deg, #ff6b81, #ff94c2);
-            /* Pink gradient for title */
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
+    .subtitle {
+      color: #666;
+      font-size: 1.1rem;
+    }
 
-        .subtitle {
-            color: #666;
-            font-size: 1.1rem;
-        }
+    .upload-area {
+      border: 2px dashed #ff9ebf;
+      border-radius: 15px;
+      padding: 2rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      width: 100%;
+    }
 
-        .upload-area {
-            border: 2px dashed #ff9ebf;
-            /* Pink dashed border */
-            border-radius: 15px;
-            padding: 2rem;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            width: 100%;
-        }
+    .upload-area:hover {
+      background-color: #ffe0f0;
+      border-color: #ff6b81;
+    }
 
-        .upload-area:hover {
-            background-color: #ffe0f0;
-            /* Lighter pink on hover */
-            border-color: #ff6b81;
-        }
+    .upload-area input[type="file"] {
+      display: none;
+    }
 
-        .upload-area input[type="file"] {
-            display: none;
-        }
-
-        .canvas-container {
-            width: 100%;
-            max-width: 700px;
-            /* Max width for the canvas */
-            background-color: #f0f0f0;
-            border-radius: 15px;
-            overflow: hidden;
-            /* Ensure image stays within rounded corners */
-            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.05);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 300px;
-            /* Minimum height for better visibility */
-        }
-
-        canvas {
-            display: block;
-            max-width: 100%;
-            height: auto;
-            border-radius: 15px;
-            /* Apply rounded corners to canvas content */
-        }
-
-        .controls {
-            width: 100%;
-            max-width: 700px;
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
-
-        .control-group {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-
-        .control-group label {
-            font-weight: 600;
-            color: #555;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .control-group input[type="range"] {
-            width: 100%;
-            height: 8px;
-            background: #ffcce0;
-            /* Pink track */
-            border-radius: 5px;
-            -webkit-appearance: none;
-            appearance: none;
-            outline: none;
-            transition: background 0.2s;
-        }
-
-        .control-group input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: linear-gradient(45deg, #ff6b81, #ff94c2);
-            /* Glossy pink thumb */
-            cursor: grab;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-            border: 2px solid #fff;
-        }
-
-        .control-group input[type="range"]::-moz-range-thumb {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: linear-gradient(45deg, #ff6b81, #ff94c2);
-            /* Glossy pink thumb */
-            cursor: grab;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-            border: 2px solid #fff;
-        }
-
-        .button-group {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        .btn {
-            padding: 0.8rem 1.8rem;
-            border-radius: 30px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .btn-primary {
-            background: linear-gradient(45deg, #ff6b81, #ff94c2);
-            /* Pink glossy button */
-            color: white;
-            border: none;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-        }
-
-        .btn-primary::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            background: rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            opacity: 0;
-            transform: translate(-50%, -50%);
-            transition: width 0.4s ease, height 0.4s ease, opacity 0.4s ease;
-        }
-
-        .btn-primary:active::after {
-            width: 200%;
-            height: 200%;
-            opacity: 1;
-            transition: 0s;
-        }
-
-        .btn-secondary {
-            background-color: #fff;
-            color: #ff6b81;
-            border: 2px solid #ff6b81;
-        }
-
-        .btn-secondary:hover {
-            background-color: #ffeff5;
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-        }
-
-        .message-box {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: rgba(255, 107, 129, 0.95);
-            color: white;
-            padding: 15px 30px;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-            z-index: 1000;
-            display: none;
-            opacity: 0;
-            transition: opacity 0.3s ease-in-out;
-            font-weight: 600;
-        }
-
-        .message-box.show {
-            display: block;
-            opacity: 1;
-        }
-
-        .loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1001;
-            color: white;
-            font-size: 1.5rem;
-            font-weight: 600;
-            backdrop-filter: blur(5px);
-            display: none; /* Hidden by default */
-        }
-        .loading-overlay.show {
-            display: flex;
-        }
-        .spinner {
-            border: 4px solid rgba(255, 255, 255, 0.3);
-            border-top: 4px solid #ff6b81;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin-right: 15px;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        @media (max-width: 768px) {
-            .container {
-                padding: 1.5rem;
-                gap: 1.5rem;
-            }
-
-            h1 {
-                font-size: 2rem;
-            }
-
-            .subtitle {
-                font-size: 1rem;
-            }
-
-            .upload-area {
-                padding: 1.5rem;
-            }
-
-            .button-group {
-                flex-direction: column;
-            }
-
-            .btn {
-                width: 100%;
-            }
-        }
-    </style>
+    .canvas-container {
+      width: 100%;
+      max-width: 700px;
+      background-color: #f0f0f0;
+      border-radius: 15px;
+    }
+  </style>
 </head>
-
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>Pixel Glitcher</h1>
-            <p class="subtitle">Upload an image and apply beautiful pixel sorting effects.</p>
-        </div>
-
-        <div class="upload-area" id="uploadArea">
-            <input type="file" id="imageUpload" accept="image/*">
-            <p class="text-lg text-gray-700">Drag & Drop your image here or
-                <span class="text-pink-500 font-bold">Click to Upload</span></p>
-            <p class="text-sm text-gray-500 mt-1">Supports JPG, PNG, GIF</p>
-        </div>
-
-        <div class="canvas-container">
-            <canvas id="imageCanvas"></canvas>
-        </div>
-
-        <div class="controls">
-            <div class="control-group">
-                <label for="thresholdSlider">
-                    <span>Sorting Threshold:</span>
-                    <span id="thresholdValue">128</span>
-                </label>
-                <input type="range" id="thresholdSlider" min="0" max="255" value="128">
-            </div>
-
-            <div class="control-group">
-                <label for="minRunLengthSlider">
-                    <span>Min Run Length:</span>
-                    <span id="minRunLengthValue">10</span>
-                </label>
-                <input type="range" id="minRunLengthSlider" min="1" max="100" value="10">
-            </div>
-
-            <div class="control-group">
-                <label for="maxRunLengthSlider">
-                    <span>Max Run Length:</span>
-                    <span id="maxRunLengthValue">100</span>
-                </label>
-                <input type="range" id="maxRunLengthSlider" min="1" max="500" value="100">
-            </div>
-
-            <div class="control-group">
-                <label for="sortDirectionSelect">Sort Direction:</label>
-                <select id="sortDirectionSelect" class="w-full p-2 border border-pink-300 rounded-md bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-pink-400">
-                    <option value="horizontal">Horizontal</option>
-                    <option value="vertical">Vertical</option>
-                </select>
-            </div>
-
-            <div class="control-group">
-                <label for="sortCriterionSelect">Sort Criterion:</label>
-                <select id="sortCriterionSelect" class="w-full p-2 border border-pink-300 rounded-md bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-pink-400">
-                    <option value="brightness">Brightness</option>
-                    <option value="hue">Hue</option>
-                    <option value="saturation">Saturation</option>
-                    <option value="red">Red</option>
-                    <option value="green">Green</option>
-                    <option value="blue">Blue</option>
-                </select>
-            </div>
-        </div>
-
-        <div class="button-group">
-            <button class="btn btn-primary" id="applyGlitchBtn">Apply Pixel Sort</button>
-            <button class="btn btn-primary" id="interpretGlitchBtn">✨ Interpret Glitch</button>
-            <button class="btn btn-primary" id="generateCaptionBtn">✨ Generate Caption</button>
-            <button class="btn btn-secondary" id="resetBtn">Reset Image</button>
-            <button class="btn btn-primary" id="downloadBtn">Download Glitched Image</button>
-        </div>
+  <div class="container">
+    <div class="header text-center">
+      <h1>Pixel Glitcher</h1>
+      <p class="subtitle">Upload your image. Let the pixels melt.</p>
     </div>
 
-    <div id="messageBox" class="message-box"></div>
-    <div id="loadingOverlay" class="loading-overlay">
-        <div class="spinner"></div>
-        <span>Generating AI response...</span>
+    <label class="upload-area" for="fileInput">
+      <span>Click or drag an image to upload</span>
+      <input type="file" id="fileInput" accept="image/*" />
+    </label>
+
+    <div class="canvas-container">
+      <canvas id="glitchCanvas" class="w-full rounded-lg"></canvas>
     </div>
 
-    <script>
-        const imageUpload = document.getElementById('imageUpload');
-        const uploadArea = document.getElementById('uploadArea');
-        const imageCanvas = document.getElementById('imageCanvas');
-        const ctx = imageCanvas.getContext('2d');
-        const applyGlitchBtn = document.getElementById('applyGlitchBtn');
-        const resetBtn = document.getElementById('resetBtn');
-        const downloadBtn = document.getElementById('downloadBtn');
-        const interpretGlitchBtn = document.getElementById('interpretGlitchBtn');
-        const generateCaptionBtn = document.getElementById('generateCaptionBtn');
+    <div class="controls flex flex-col gap-4 w-full max-w-lg">
+      <label class="flex justify-between">
+        <span>Sort Threshold</span>
+        <input type="range" min="1" max="100" value="50" />
+      </label>
+      <label class="flex justify-between">
+        <span>Run Length</span>
+        <input type="range" min="1" max="100" value="30" />
+      </label>
+    </div>
 
-        const thresholdSlider = document.getElementById('thresholdSlider');
-        const thresholdValueSpan = document.getElementById('thresholdValue');
-        const minRunLengthSlider = document.getElementById('minRunLengthSlider');
-        const minRunLengthValueSpan = document.getElementById('minRunLengthValue');
-        const maxRunLengthSlider = document.getElementById('maxRunLengthSlider');
-        const maxRunLengthValueSpan = document.getElementById('maxRunLengthValue');
-        const sortDirectionSelect = document.getElementById('sortDirectionSelect');
-        const sortCriterionSelect = document.getElementById('sortCriterionSelect');
-        const messageBox = document.getElementById('messageBox');
-        const loadingOverlay = document.getElementById('loadingOverlay');
-
-        let originalImageData = null;
-        let currentImage = new Image();
-
-        // Show message box function
-        function showMessageBox(message) {
-            messageBox.textContent = message;
-            messageBox.classList.add('show');
-            setTimeout(() => {
-                messageBox.classList.remove('show');
-            }, 3000); // Hide after 3 seconds
-        }
-
-        // Show/hide loading overlay
-        function showLoading() {
-            loadingOverlay.classList.add('show');
-        }
-
-        function hideLoading() {
-            loadingOverlay.classList.remove('show');
-        }
-
-        // Update slider value spans
-        thresholdSlider.oninput = () => thresholdValueSpan.textContent = thresholdSlider.value;
-        minRunLengthSlider.oninput = () => minRunLengthValueSpan.textContent = minRunLengthSlider.value;
-        maxRunLengthSlider.oninput = () => maxRunLengthValueSpan.textContent = maxRunLengthSlider.value;
-
-        // Handle image upload via click
-        uploadArea.addEventListener('click', () => {
-            imageUpload.click();
-        });
-
-        // Handle image upload via drag and drop
-        uploadArea.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            uploadArea.classList.add('border-pink-600');
-        });
-
-        uploadArea.addEventListener('dragleave', () => {
-            uploadArea.classList.remove('border-pink-600');
-        });
-
-        uploadArea.addEventListener('drop', (e) => {
-            e.preventDefault();
-            uploadArea.classList.remove('border-pink-600');
-            const files = e.dataTransfer.files;
-            if (files.length > 0) {
-                handleImageFile(files[0]);
-            }
-        });
-
-        imageUpload.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                handleImageFile(file);
-            }
-        });
-
-        function handleImageFile(file) {
-            if (!file.type.startsWith('image/')) {
-                showMessageBox('Please upload an image file (JPG, PNG, GIF).');
-                return;
-            }
-
-            const reader = new FileReader();
-            reader.onload = (event) => {
-                currentImage.onload = () => {
-                    // Set canvas dimensions to match image, but max out at container width
-                    const maxWidth = document.querySelector('.canvas-container').clientWidth;
-                    const maxHeight = window.innerHeight * 0.7; // Max height to avoid overflow on small screens
-
-                    let newWidth = currentImage.width;
-                    let newHeight = currentImage.height;
-
-                    if (newWidth > maxWidth) {
-                        newHeight = newHeight * (maxWidth / newWidth);
-                        newWidth = maxWidth;
-                    }
-                    if (newHeight > maxHeight) {
-                        newWidth = newWidth * (maxHeight / newWidth);
-                        newWidth = maxWidth;
-                    }
-
-                    imageCanvas.width = newWidth;
-                    imageCanvas.height = newHeight;
-
-                    ctx.drawImage(currentImage, 0, 0, newWidth, newHeight);
-                    // Store original image data for reset
-                    originalImageData = ctx.getImageData(0, 0, imageCanvas.width, imageCanvas.height);
-                    showMessageBox('Image loaded successfully!');
-                };
-                currentImage.onerror = () => {
-                    showMessageBox('Error loading image. Please try again.');
-                };
-                currentImage.src = event.target.result;
-            };
-            reader.onerror = () => {
-                showMessageBox('Error reading file. Please try again.');
-            };
-            reader.readAsDataURL(file);
-        }
-
-        // --- Pixel Sorting Logic ---
-        function getPixelValue(pixel, criterion) {
-            const r = pixel[0];
-            const g = pixel[1];
-            const b = pixel[2];
-
-            switch (criterion) {
-                case 'brightness':
-                    return (r + g + b) / 3; // Average brightness
-                case 'hue':
-                    // Convert RGB to HSL and return hue
-                    const max = Math.max(r, g, b);
-                    const min = Math.min(r, g, b);
-                    let h;
-                    if (max === min) {
-                        h = 0;
-                    } else if (max === r) {
-                        h = (g - b) / (max - min) + (g < b ? 6 : 0);
-                    } else if (max === g) {
-                        h = (b - r) / (max - min) + 2;
-                    } else {
-                        h = (r - g) / (max - min) + 4;
-                    }
-                    return h * 60; // Return hue in degrees (0-360)
-                case 'saturation':
-                    // Convert RGB to HSL and return saturation
-                    const delta = max - min;
-                    const sum = max + min;
-                    const l = sum / 2;
-                    let s = 0;
-                    if (max !== min) {
-                        s = l > 0.5 ? delta / (2 - sum) : delta / sum;
-                    }
-                    return s * 100; // Return saturation percentage (0-100)
-                case 'red':
-                    return r;
-                case 'green':
-                    return g;
-                case 'blue':
-                    return b;
-                default:
-                    return (r + g + b) / 3;
-            }
-        }
-
-        function sortPixels(pixels, criterion) {
-            pixels.sort((a, b) => {
-                const valA = getPixelValue(a, criterion);
-                const valB = getPixelValue(b, criterion);
-                return valA - valB;
-            });
-        }
-
-        function applyPixelSort() {
-            if (!originalImageData) {
-                showMessageBox('Please upload an image first!');
-                return;
-            }
-
-            // Draw original image data back to canvas to start fresh
-            ctx.putImageData(originalImageData, 0, 0);
-            let imageData = ctx.getImageData(0, 0, imageCanvas.width, imageCanvas.height);
-            let pixels = imageData.data;
-
-            const threshold = parseInt(thresholdSlider.value);
-            const minRunLength = parseInt(minRunLengthSlider.value);
-            const maxRunLength = parseInt(maxRunLengthSlider.value);
-            const sortDirection = sortDirectionSelect.value;
-            const sortCriterion = sortCriterionSelect.value;
-
-            const width = imageCanvas.width;
-            const height = imageCanvas.height;
-
-            if (sortDirection === 'horizontal') {
-                for (let y = 0; y < height; y++) {
-                    let runStart = -1;
-                    for (let x = 0; x < width; x++) {
-                        const i = (y * width + x) * 4;
-                        const r = pixels[i];
-                        const g = pixels[i + 1];
-                        const b = pixels[i + 2];
-                        const pixelBrightness = (r + g + b) / 3; // Use brightness for thresholding
-
-                        if (pixelBrightness < threshold) {
-                            if (runStart === -1) {
-                                runStart = x;
-                            }
-                        } else {
-                            if (runStart !== -1) {
-                                // End of a run or brightness condition not met
-                                const runEnd = x - 1;
-                                const runLength = runEnd - runStart + 1;
-
-                                if (runLength >= minRunLength && runLength <= maxRunLength) {
-                                    let segment = [];
-                                    for (let k = runStart; k <= runEnd; k++) {
-                                        const pixelIndex = (y * width + k) * 4;
-                                        segment.push([
-                                            pixels[pixelIndex],
-                                            pixels[pixelIndex + 1],
-                                            pixels[pixelIndex + 2],
-                                            pixels[pixelIndex + 3]
-                                        ]);
-                                    }
-                                    sortPixels(segment, sortCriterion);
-                                    for (let k = 0; k < segment.length; k++) {
-                                        const pixelIndex = (y * width + runStart + k) * 4;
-                                        pixels[pixelIndex] = segment[k][0];
-                                        pixels[pixelIndex + 1] = segment[k][1];
-                                        pixels[pixelIndex + 2] = segment[k][2];
-                                        pixels[pixelIndex + 3] = segment[k][3];
-                                    }
-                                }
-                                runStart = -1; // Reset run start
-                            }
-                        }
-                    }
-                    // Handle case where a run extends to the end of the line
-                    if (runStart !== -1) {
-                        const runEnd = width - 1;
-                        const runLength = runEnd - runStart + 1;
-                        if (runLength >= minRunLength && runLength <= maxRunLength) {
-                            let segment = [];
-                            for (let k = runStart; k <= runEnd; k++) {
-                                const pixelIndex = (y * width + k) * 4;
-                                segment.push([
-                                    pixels[pixelIndex],
-                                    pixels[pixelIndex + 1],
-                                    pixels[pixelIndex + 2],
-                                    pixels[pixelIndex + 3]
-                                ]);
-                            }
-                            sortPixels(segment, sortCriterion);
-                            for (let k = 0; k < segment.length; k++) {
-                                const pixelIndex = (y * width + runStart + k) * 4;
-                                pixels[pixelIndex] = segment[k][0];
-                                pixels[pixelIndex + 1] = segment[k][1];
-                                pixels[pixelIndex + 2] = segment[k][2];
-                                pixels[pixelIndex + 3] = segment[k][3];
-                            }
-                        }
-                    }
-                }
-            } else { // Vertical sorting
-                for (let x = 0; x < width; x++) {
-                    let runStart = -1;
-                    for (let y = 0; y < height; y++) {
-                        const i = (y * width + x) * 4;
-                        const r = pixels[i];
-                        const g = pixels[i + 1];
-                        const b = pixels[i + 2];
-                        const pixelBrightness = (r + g + b) / 3;
-
-                        if (pixelBrightness < threshold) {
-                            if (runStart === -1) {
-                                runStart = y;
-                            }
-                        } else {
-                            if (runStart !== -1) {
-                                const runEnd = y - 1;
-                                const runLength = runEnd - runStart + 1;
-
-                                if (runLength >= minRunLength && runLength <= maxRunLength) {
-                                    let segment = [];
-                                    for (let k = runStart; k <= runEnd; k++) {
-                                        const pixelIndex = (k * width + x) * 4;
-                                        segment.push([
-                                            pixels[pixelIndex],
-                                            pixels[pixelIndex + 1],
-                                            pixels[pixelIndex + 2],
-                                            pixels[pixelIndex + 3]
-                                        ]);
-                                    }
-                                    sortPixels(segment, sortCriterion);
-                                    for (let k = 0; k < segment.length; k++) {
-                                        const pixelIndex = ((runStart + k) * width + x) * 4;
-                                        pixels[pixelIndex] = segment[k][0];
-                                        pixels[pixelIndex + 1] = segment[k][1];
-                                        pixels[pixelIndex + 2] = segment[k][2];
-                                        pixels[pixelIndex + 3] = segment[k][3];
-                                    }
-                                }
-                                runStart = -1;
-                            }
-                        }
-                    }
-                    // Handle case where a run extends to the end of the column
-                    if (runStart !== -1) {
-                        const runEnd = height - 1;
-                        const runLength = runEnd - runStart + 1;
-                        if (runLength >= minRunLength && runLength <= maxRunLength) {
-                            let segment = [];
-                            for (let k = runStart; k <= runEnd; k++) {
-                                const pixelIndex = (k * width + x) * 4;
-                                segment.push([
-                                    pixels[pixelIndex],
-                                    pixels[pixelIndex + 1],
-                                    pixels[pixelIndex + 2],
-                                    pixels[pixelIndex + 3]
-                                ]);
-                            }
-                            sortPixels(segment, sortCriterion);
-                            for (let k = 0; k < segment.length; k++) {
-                                const pixelIndex = ((runStart + k) * width + x) * 4;
-                                pixels[pixelIndex] = segment[k][0];
-                                pixels[pixelIndex + 1] = segment[k][1];
-                                pixels[pixelIndex + 2] = segment[k][2];
-                                pixels[pixelIndex + 3] = segment[k][3];
-                            }
-                        }
-                    }
-                }
-            }
-
-            ctx.putImageData(imageData, 0, 0);
-            showMessageBox('Pixel sort applied!');
-        }
-
-        applyGlitchBtn.addEventListener('click', applyPixelSort);
-
-        // Reset image
-        resetBtn.addEventListener('click', () => {
-            if (originalImageData) {
-                imageCanvas.width = originalImageData.width;
-                imageCanvas.height = originalImageData.height;
-                ctx.putImageData(originalImageData, 0, 0);
-                showMessageBox('Image reset to original.');
-            } else {
-                showMessageBox('No image to reset!');
-            }
-        });
-
-        // Download glitched image
-        downloadBtn.addEventListener('click', () => {
-            if (imageCanvas.width === 0 || imageCanvas.height === 0) {
-                showMessageBox('No image to download!');
-                return;
-            }
-            const link = document.createElement('a');
-            link.download = 'glitched_image.png';
-            link.href = imageCanvas.toDataURL('image/png');
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            showMessageBox('Image downloaded!');
-        });
-
-        // --- Gemini API Integrations ---
-        async function callGeminiAPI(prompt, includeImage = true) {
-            if (!currentImage.src) {
-                showMessageBox('Please upload an image first!');
-                return;
-            }
-
-            showLoading(); // Show loading overlay
-
-            let chatHistory = [];
-            const parts = [{
-                text: prompt
-            }];
-
-            if (includeImage) {
-                // Get the base64 data of the current canvas image
-                const base64ImageData = imageCanvas.toDataURL('image/png').split(',')[1];
-                parts.push({
-                    inlineData: {
-                        mimeType: "image/png",
-                        data: base64ImageData
-                    }
-                });
-            }
-
-            chatHistory.push({
-                role: "user",
-                parts: parts
-            });
-
-            const payload = {
-                contents: chatHistory
-            };
-            const apiKey = ""; // Canvas will automatically provide the API key
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-
-            try {
-                const response = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(payload)
-                });
-
-                const result = await response.json();
-                if (result.candidates && result.candidates.length > 0 &&
-                    result.candidates[0].content && result.candidates[0].content.parts &&
-                    result.candidates[0].content.parts.length > 0) {
-                    return result.candidates[0].content.parts[0].text;
-                } else {
-                    console.error('Unexpected API response structure:', result);
-                    return 'Could not generate a response. Please try again.';
-                }
-            } catch (error) {
-                console.error('Error calling Gemini API:', error);
-                return 'An error occurred while connecting to the AI. Please try again.';
-            } finally {
-                hideLoading(); // Hide loading overlay
-            }
-        }
-
-        interpretGlitchBtn.addEventListener('click', async () => {
-            const description = await callGeminiAPI('Analyze this glitched image. Describe its abstract qualities, mood, and potential artistic interpretations. What kind of feelings or concepts does it evoke?', true);
-            showMessageBox(description);
-        });
-
-        generateCaptionBtn.addEventListener('click', async () => {
-            const caption = await callGeminiAPI('Generate a short, creative, and artistic caption (2-3 sentences) for this glitched image. Focus on the abstract nature and visual effects.', true);
-            showMessageBox(caption);
-        });
-
-        // Initial display for sliders
-        thresholdValueSpan.textContent = thresholdSlider.value;
-        minRunLengthValueSpan.textContent = minRunLengthSlider.value;
-        maxRunLengthValueSpan.textContent = maxRunLengthSlider.value;
-
-        // Make the canvas responsive on window resize
-        window.addEventListener('resize', () => {
-            if (currentImage.src) { // Only resize if an image is loaded
-                currentImage.onload(); // Re-trigger image load to resize canvas and redraw
-            }
-        });
-
-        // Initial message to prompt user
-        window.onload = () => {
-            showMessageBox('Upload an image to start glitching!');
-        };
-    </script>
+    <div class="buttons flex gap-4 mt-4">
+      <button class="bg-pink-500 hover:bg-pink-600 text-white font-semibold py-2 px-4 rounded shadow">
+        Interpret Glitch
+      </button>
+      <button class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded shadow">
+        Download
+      </button>
+    </div>
+  </div>
 </body>
-
 </html>
