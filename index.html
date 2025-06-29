@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+\<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -134,5 +134,139 @@
       }, 2000);
     });
   </script>
+<script>
+const fileInput = document.getElementById("fileInput");
+const glitchCanvas = document.getElementById("glitchCanvas");
+const ctx = glitchCanvas.getContext("2d");
+const spinner = document.getElementById("spinner");
+const glitchBtn = document.getElementById("glitchBtn");
+
+let originalImage = null;
+
+// Load image into canvas
+fileInput.addEventListener("change", (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function (event) {
+    const img = new Image();
+    img.onload = function () {
+      glitchCanvas.width = img.width;
+      glitchCanvas.height = img.height;
+      ctx.drawImage(img, 0, 0);
+      originalImage = ctx.getImageData(0, 0, img.width, img.height);
+    };
+    img.src = event.target.result;
+  };
+  reader.readAsDataURL(file);
+});
+
+// Fake glitch process
+function applyGlitchEffect() {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      // Simulate glitch by shifting a chunk of pixels
+      if (originalImage) {
+        const imageData = new ImageData(
+          new Uint8ClampedArray(originalImage.data),
+          originalImage.width,
+          originalImage.height
+        );
+
+        for (let i = 0; i < 1000; i++) {
+          const index = Math.floor(Math.random() * imageData.data.length - 4);
+          imageData.data[index] = 255;      // red
+          imageData.data[index + 1] = 0;    // green
+          imageData.data[index + 2] = 255;  // blue
+        }
+
+        ctx.putImageData(imageData, 0, 0);
+      }
+      resolve();
+    }, 1500);
+  });
+}
+
+// Wire up button
+glitchBtn.addEventListener("click", async () => {
+  if (!originalImage) {
+    alert("Please upload an image first.");
+    return;
+  }
+
+  spinner.style.display = "block";
+
+  await applyGlitchEffect();
+
+  spinner.style.display = "none";
+});
+</script>
+<script>
+  const fileInput = document.getElementById("fileInput");
+  const glitchCanvas = document.getElementById("glitchCanvas");
+  const ctx = glitchCanvas.getContext("2d");
+  const spinner = document.getElementById("spinner");
+  const glitchBtn = document.getElementById("glitchBtn");
+
+  let originalImage = null;
+
+  // Load image into canvas
+  fileInput.addEventListener("change", (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function (event) {
+      const img = new Image();
+      img.onload = function () {
+        glitchCanvas.width = img.width;
+        glitchCanvas.height = img.height;
+        ctx.drawImage(img, 0, 0);
+        originalImage = ctx.getImageData(0, 0, img.width, img.height);
+      };
+      img.src = event.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+
+  // Simulated glitch effect
+  function applyGlitchEffect() {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        if (originalImage) {
+          const imageData = new ImageData(
+            new Uint8ClampedArray(originalImage.data),
+            originalImage.width,
+            originalImage.height
+          );
+
+          for (let i = 0; i < 1000; i++) {
+            const index = Math.floor(Math.random() * imageData.data.length - 4);
+            imageData.data[index] = 255;
+            imageData.data[index + 1] = 0;
+            imageData.data[index + 2] = 255;
+          }
+
+          ctx.putImageData(imageData, 0, 0);
+        }
+        resolve();
+      }, 1500);
+    });
+  }
+
+  // Button click handler
+  glitchBtn.addEventListener("click", async () => {
+    if (!originalImage) {
+      alert("Please upload an image first.");
+      return;
+    }
+
+    spinner.style.display = "block";
+    await applyGlitchEffect();
+    spinner.style.display = "none";
+  });
+</script>
+
 </body>
 </html>
